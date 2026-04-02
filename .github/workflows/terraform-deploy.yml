@@ -71,7 +71,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.7.0"
+          terraform_version: ">=1.14.0"
 
       # 3. terraform init — connects to your Azure blob backend
       - name: Terraform Init
