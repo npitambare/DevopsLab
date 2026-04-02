@@ -6,28 +6,37 @@ on:
   pull_request:
   workflow_dispatch:
 
-env:
-  ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
-  ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-  ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
-
 jobs:
   terraform:
-    name: Terraform
     runs-on: ubuntu-latest
+    env:
+      ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
 
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      # Step 1 — pre-authenticate the runner
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: |
+            {
+              "clientId":       "${{ secrets.ARM_CLIENT_ID }}",
+              "clientSecret":   "${{ secrets.ARM_CLIENT_SECRET }}",
+              "subscriptionId": "${{ secrets.ARM_SUBSCRIPTION_ID }}",
+              "tenantId":       "${{ secrets.ARM_TENANT_ID }}"
+            }
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ">=1.14.0"
 
-      # ✅ KEY FIX: pass credentials explicitly to terraform init
+      # Step 2 — init with explicit backend credentials
       - name: Terraform Init
         run: |
           terraform init \
