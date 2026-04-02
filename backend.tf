@@ -7,6 +7,6 @@ terraform {
     key                  = "devops.terraform.tfstate"
 
 # ✅ Add these 4 lines — Terraform reads ARM_* env vars automatically
-    use_azuread_auth = false
+    use_azuread_auth = true
   }
 }
